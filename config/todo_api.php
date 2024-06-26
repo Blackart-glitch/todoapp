@@ -12,5 +12,5 @@ return [
     |
     */
 
-    'url' => env('TODO_API_URL', 'http://localhost'),
+    'url' => env('TODO_API_URL'),
 ];
