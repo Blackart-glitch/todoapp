@@ -12,14 +12,16 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    $TaskApiService = new App\Services\TaskAPIService();
-    $tasks = (new TaskController($TaskApiService))->index();
+    $today_tasks = $tasks = [];
+    if (auth()->user()->todo_token) {
+        $TaskApiService = new App\Services\TaskAPIService();
+        $tasks = (new TaskController($TaskApiService))->index();
 
-    // get all of the todos titles that are due today from the collection tasks
-    $today_tasks = [];
-    foreach ($tasks as $task) {
-        if (\Carbon\Carbon::parse($task->due_date)->isToday()) {
-            $today_tasks[] = $task->title;
+        // get all of the todos titles that are due today from the collection tasks
+        foreach ($tasks as $task) {
+            if (\Carbon\Carbon::parse($task->due_date)->isToday()) {
+                $today_tasks[] = $task->title;
+            }
         }
     }
 

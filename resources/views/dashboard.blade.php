@@ -61,7 +61,8 @@
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="   overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="grid grid-cols-1 bg-gray-400 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
-                        @if ($tasks)
+
+                        @if (!empty($tasks))
                             @foreach ($tasks as $task)
                                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg max-w-xs mx-auto">
                                     <div class="p-6 bg-white">
@@ -216,6 +217,151 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Task Edit Modal -->
+                                <div id="taskEditModal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+                                    <div
+                                        class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                                        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+                                        <div
+                                            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                                            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                                <div class="sm:flex sm:items-start">
+                                                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                                                        <h3 class="text-lg leading-6 font-medium text-gray-900">Edit
+                                                            Task
+                                                        </h3>
+                                                        <div class="mt-2">
+                                                            <form id="taskEditForm">
+                                                                @csrf
+                                                                <input type="hidden" name="task_id" id="task_id">
+                                                                <div>
+                                                                    <label for="task_title"
+                                                                        class="block text-sm font-medium text-gray-700">Title</label>
+                                                                    <input type="text" name="task_title"
+                                                                        id="task_title"
+                                                                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
+                                                                </div>
+                                                                <div class="mt-4">
+                                                                    <label for="task_description"
+                                                                        class="block text-sm font-medium text-gray-700">Description</label>
+                                                                    <textarea name="task_description" id="task_description"
+                                                                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"></textarea>
+                                                                </div>
+                                                                <div class="mt-4 flex center justify-between">
+                                                                    <div class="relative max-w-sm">
+                                                                        <div
+                                                                            class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                                                                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                                                                aria-hidden="true"
+                                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                                fill="currentColor"
+                                                                                viewBox="0 0 20 20">
+                                                                                <path
+                                                                                    d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
+                                                                            </svg>
+                                                                        </div>
+                                                                        <input datepicker datepicker-buttons
+                                                                            datepicker-autoselect-today type="text"
+                                                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                                            placeholder="Select date"
+                                                                            name="task_due_date" id="task_due_date">
+                                                                    </div>
+                                                                    <div class="relative">
+                                                                        <div
+                                                                            class="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
+                                                                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                                                                aria-hidden="true"
+                                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                                fill="currentColor"
+                                                                                viewBox="0 0 24 24">
+                                                                                <path fill-rule="evenodd"
+                                                                                    d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
+                                                                                    clip-rule="evenodd" />
+                                                                            </svg>
+                                                                        </div>
+                                                                        <input type="time" id="task_due_time"
+                                                                            class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                                            min="09:00" max="18:00"
+                                                                            value="00:00" name="task_due_time"
+                                                                            required />
+                                                                    </div>
+                                                                </div>
+                                                                <div class="mt-4">
+                                                                    <x-input-label for="priority" :value="__('Priority')" />
+                                                                    <select name="task_priority" id="task_priority"
+                                                                        class="bg-gray-100 focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
+                                                                        <option value="" disabled selected>Select
+                                                                            a
+                                                                            priority
+                                                                        </option>
+                                                                        <option value="low">Low</option>
+                                                                        <option value="medium">Medium</option>
+                                                                        <option value="high">High</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="mt-4">
+                                                                    <x-primary-button> Save </x-primary-button>
+                                                                    <x-secondary-button
+                                                                        onclick="closeModal('taskEditModal')">
+                                                                        Cancel
+                                                                    </x-secondary-button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Subtask Edit Modal -->
+                                <div id="subtaskEditModal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+                                    <div
+                                        class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                                        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+                                        <div
+                                            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                                            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                                <div class="sm:flex sm:items-start">
+                                                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                                                        <h3 class="text-lg leading-6 font-medium text-gray-900">Edit
+                                                            Subtask</h3>
+                                                        <div class="mt-2">
+                                                            <form id="subtaskEditForm" method="POST"
+                                                                action="{{ route('subtasks.push', ['task' => $task->_id]) }}">
+                                                                @csrf
+                                                                @method('PATCH')
+                                                                <input type="hidden" name="taskid" id="task">
+
+                                                                <div class="border border-yellow-500 p-4 rounded mb-4">
+                                                                    <div
+                                                                        class="mb-4 border-dotted border-2 border-gray-300 p-3">
+                                                                        <span>Task </span>
+                                                                        <x-text-input class="block mt-1 w-full"
+                                                                            type="text" name="title"
+                                                                            id="subtask_title"
+                                                                            placeholder="Lets keep it short" />
+                                                                    </div>
+                                                                </div>
+                                                                <div class="mt-4">
+                                                                    <button type="submit"
+                                                                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                                                        Save
+                                                                    </button>
+                                                                    <button type="button"
+                                                                        onclick="closeModal('subtaskEditModal')"
+                                                                        class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                                                                        Cancel
+                                                                    </button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             @endforeach
                         @else
                             <a href="#"
@@ -232,138 +378,6 @@
 
                     </div>
                     @endif
-                </div>
-
-                <!-- Task Edit Modal -->
-                <div id="taskEditModal" class="fixed z-10 inset-0 overflow-y-auto hidden">
-                    <div
-                        class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
-                        <div
-                            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                                <div class="sm:flex sm:items-start">
-                                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                                        <h3 class="text-lg leading-6 font-medium text-gray-900">Edit Task</h3>
-                                        <div class="mt-2">
-                                            <form id="taskEditForm">
-                                                @csrf
-                                                <input type="hidden" name="task_id" id="task_id">
-                                                <div>
-                                                    <label for="task_title"
-                                                        class="block text-sm font-medium text-gray-700">Title</label>
-                                                    <input type="text" name="task_title" id="task_title"
-                                                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
-                                                </div>
-                                                <div class="mt-4">
-                                                    <label for="task_description"
-                                                        class="block text-sm font-medium text-gray-700">Description</label>
-                                                    <textarea name="task_description" id="task_description"
-                                                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"></textarea>
-                                                </div>
-                                                <div class="mt-4 flex center justify-between">
-                                                    <div class="relative max-w-sm">
-                                                        <div
-                                                            class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                                                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                                                                aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                                                fill="currentColor" viewBox="0 0 20 20">
-                                                                <path
-                                                                    d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
-                                                            </svg>
-                                                        </div>
-                                                        <input datepicker datepicker-buttons datepicker-autoselect-today
-                                                            type="text"
-                                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                                            placeholder="Select date" name="task_due_date"
-                                                            id="task_due_date">
-                                                    </div>
-                                                    <div class="relative">
-                                                        <div
-                                                            class="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
-                                                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                                                                aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                                                fill="currentColor" viewBox="0 0 24 24">
-                                                                <path fill-rule="evenodd"
-                                                                    d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
-                                                                    clip-rule="evenodd" />
-                                                            </svg>
-                                                        </div>
-                                                        <input type="time" id="task_due_time"
-                                                            class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                                            min="09:00" max="18:00" value="00:00"
-                                                            name="task_due_time" required />
-                                                    </div>
-                                                </div>
-                                                <div class="mt-4">
-                                                    <x-input-label for="priority" :value="__('Priority')" />
-                                                    <select name="task_priority" id="task_priority"
-                                                        class="bg-gray-100 focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
-                                                        <option value="" disabled selected>Select a priority
-                                                        </option>
-                                                        <option value="low">Low</option>
-                                                        <option value="medium">Medium</option>
-                                                        <option value="high">High</option>
-                                                    </select>
-                                                </div>
-                                                <div class="mt-4">
-                                                    <x-primary-button> Save </x-primary-button>
-                                                    <x-secondary-button onclick="closeModal('taskEditModal')">
-                                                        Cancel
-                                                    </x-secondary-button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Subtask Edit Modal -->
-                <div id="subtaskEditModal" class="fixed z-10 inset-0 overflow-y-auto hidden">
-                    <div
-                        class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
-                        <div
-                            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                                <div class="sm:flex sm:items-start">
-                                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                                        <h3 class="text-lg leading-6 font-medium text-gray-900">Edit Subtask</h3>
-                                        <div class="mt-2">
-                                            <form id="subtaskEditForm" method="POST"
-                                                action="{{ route('subtasks.push', ['task' => $task->_id]) }}">
-                                                @csrf
-                                                @method('PATCH')
-                                                <input type="hidden" name="taskid" id="task">
-
-                                                <div class="border border-yellow-500 p-4 rounded mb-4">
-                                                    <div class="mb-4 border-dotted border-2 border-gray-300 p-3">
-                                                        <span>Task </span>
-                                                        <x-text-input class="block mt-1 w-full" type="text"
-                                                            name="title" id="subtask_title"
-                                                            placeholder="Lets keep it short" />
-                                                    </div>
-                                                </div>
-                                                <div class="mt-4">
-                                                    <button type="submit"
-                                                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                                        Save
-                                                    </button>
-                                                    <button type="button" onclick="closeModal('subtaskEditModal')"
-                                                        class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                                                        Cancel
-                                                    </button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
