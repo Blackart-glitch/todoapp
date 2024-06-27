@@ -66,6 +66,21 @@ Route::post('/link/account', function (Request $request) {
                 'username' => $user->name,
                 'password' => $request->password,
             ]);
+    //if the token does not exist, attempt to login the user
+    if (empty($response->json()['token'] ?? null)) {
+        $response = Http::withOptions([
+            'verify' => false,
+        ])->post(config('todo_api.url') . '/users/login', [
+                    'email' => $user->email,
+                    'password' => $request->password,
+                ]);
+    }
+
+    // if the token still does not exist, fail
+    if (empty($response->json()['token'] ?? null)) {
+        return back()->withErrors(['errors' => 'We were unable to to link your account properly. Please try again.']);
+    }
+
     $user->todo_token = $response->json()['token'];
     $user->save();
     return redirect()->route('link_account')->with('success', 'Account linked successfully!');
