@@ -375,112 +375,110 @@
                                         list is as empty as a desert. Time to get cracking and add some tasks!</p>
                                 </div>
                             </a>
-
+                        @endif
                     </div>
-                    @endif
                 </div>
             </div>
-        </div>
-        <script>
-            function formatDate(dateString) {
-                const date = new Date(dateString);
-                const year = date.getFullYear();
-                const month = String(date.getMonth() + 1).padStart(2, '0'); // months are zero-indexed
-                const day = String(date.getDate()).padStart(2, '0');
+            <script>
+                function formatDate(dateString) {
+                    const date = new Date(dateString);
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, '0'); // months are zero-indexed
+                    const day = String(date.getDate()).padStart(2, '0');
 
-                return `${year}-${month}-${day}`;
-            }
-
-            function openModal(taskId) {
-                fetch(`/tasks/${taskId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        document.getElementById('task_title').value = data.title;
-                        document.getElementById('task_id').value = data._id;
-                        document.getElementById('task_description').value = data.description;
-                        document.getElementById('task_due_date').value = formatDate(data.due_date);
-                        document.getElementById('task_priority').value = data.priority;
-                        document.getElementById('taskEditModal').classList.remove('hidden');
-                    });
-            }
-
-            function openSubtaskModal(todoId) {
-                fetch(`/tasks/${todoId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        document.getElementById('subtask_title').value = data.title;
-                        document.getElementById('subtaskEditModal').classList.remove('hidden');
-                    });
-            }
-
-            function closeModal(modalId) {
-                document.getElementById(modalId).classList.add('hidden');
-            }
-
-            document.getElementById('taskEditForm').addEventListener('submit', function(event) {
-                event.preventDefault();
-                const taskId = document.getElementById('task_id').value;
-                const taskData = {
-                    title: document.getElementById('task_title').value,
-                    description: document.getElementById('task_description').value,
-                    due_date: document.getElementById('task_due_date').value,
-                    time: document.getElementById('task_due_time').value,
-                    priority: document.getElementById('task_priority').value
-                };
-                fetch(`/tasks/${taskId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify(taskData),
-                }).then(response => {
-                    console.log(response);
-                    if (response.ok) {
-                        closeModal('taskEditModal');
-                        location.reload(); // Reload the page or update the task list dynamically
-                    }
-                });
-            });
-
-            function markAsCompleted(taskId, subtaskId = null) {
-                let url = ''; // Use let for block scope
-                if (subtaskId) {
-                    url =
-                        `/tasks/subtasks/${taskId}`; // Corrected endpoint, assuming you meant to use both taskId and subtaskId
-                } else {
-                    url = `/tasks/${taskId}`;
+                    return `${year}-${month}-${day}`;
                 }
-                fetch(url, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        completed: true,
-                        subtask: subtaskId
-                    })
-                }).then(response => {
-                    if (response.ok) {
-                        location.reload(); // Reload the page or update the task list dynamically
-                    }
-                });
-            }
 
-            function deleteTask(taskId) {
-                fetch(`/tasks/${taskId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    }
-                }).then(response => {
-                    if (response.ok) {
-                        location.reload(); // Reload the page or update the task list dynamically
-                    }
+                function openModal(taskId) {
+                    fetch(`/tasks/${taskId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            document.getElementById('task_title').value = data.title;
+                            document.getElementById('task_id').value = data._id;
+                            document.getElementById('task_description').value = data.description;
+                            document.getElementById('task_due_date').value = formatDate(data.due_date);
+                            document.getElementById('task_priority').value = data.priority;
+                            document.getElementById('taskEditModal').classList.remove('hidden');
+                        });
+                }
+
+                function openSubtaskModal(todoId) {
+                    fetch(`/tasks/${todoId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            document.getElementById('subtask_title').value = data.title;
+                            document.getElementById('subtaskEditModal').classList.remove('hidden');
+                        });
+                }
+
+                function closeModal(modalId) {
+                    document.getElementById(modalId).classList.add('hidden');
+                }
+
+                document.getElementById('taskEditForm').addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    const taskId = document.getElementById('task_id').value;
+                    const taskData = {
+                        title: document.getElementById('task_title').value,
+                        description: document.getElementById('task_description').value,
+                        due_date: document.getElementById('task_due_date').value,
+                        time: document.getElementById('task_due_time').value,
+                        priority: document.getElementById('task_priority').value
+                    };
+                    fetch(`/tasks/${taskId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify(taskData),
+                    }).then(response => {
+                        console.log(response);
+                        if (response.ok) {
+                            closeModal('taskEditModal');
+                            location.reload(); // Reload the page or update the task list dynamically
+                        }
+                    });
                 });
-            }
-        </script>
-    </div>
+
+                function markAsCompleted(taskId, subtaskId = null) {
+                    let url = ''; // Use let for block scope
+                    if (subtaskId) {
+                        url =
+                            `/tasks/subtasks/${taskId}`; // Corrected endpoint, assuming you meant to use both taskId and subtaskId
+                    } else {
+                        url = `/tasks/${taskId}`;
+                    }
+                    fetch(url, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            completed: true,
+                            subtask: subtaskId
+                        })
+                    }).then(response => {
+                        if (response.ok) {
+                            location.reload(); // Reload the page or update the task list dynamically
+                        }
+                    });
+                }
+
+                function deleteTask(taskId) {
+                    fetch(`/tasks/${taskId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        }
+                    }).then(response => {
+                        if (response.ok) {
+                            location.reload(); // Reload the page or update the task list dynamically
+                        }
+                    });
+                }
+            </script>
+        </div>
 </x-app-layout>
